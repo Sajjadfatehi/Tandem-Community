@@ -2,11 +2,14 @@ package com.sajjadfatehi.tandemcommunity.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -128,11 +132,9 @@ private fun CommunityMemberItem(
     member: CommunityMember,
     onLikeClick: () -> Unit
 ) {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .background(Color.LightGray)
             .padding(8.dp)
             .clickable(onClick = onLikeClick)
     ) {
@@ -151,55 +153,13 @@ private fun CommunityMemberItem(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = member.firstName,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    MemberName(member)
                     Spacer(modifier = Modifier.weight(1f))
-
-                    if (member.isNew) {
-                        Text(
-                            text = "NEW",
-                            modifier = Modifier
-                                .background(
-                                    color = Color.Magenta,
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .padding(
-                                    start = 16.dp,
-                                    end = 16.dp,
-                                    top = 8.dp,
-                                    bottom = 8.dp
-                                ),
-                            style = TextStyle(color = Color.White)
-                        )
-                    } else {
-                        Text(member.referenceCnt.toString())
-                    }
+                    MemberReferenceCount(member)
                 }
-
-                Text(
-                    text = member.topic,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                //TODO:manage different styles later
+                Description(member)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = "Native-${member.natives.joinToString()}",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 16.dp),
-                        text = "Learns-${member.learns.joinToString()}",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    LanguagesInfo(member)
                     IconToggleButton(
                         modifier = Modifier.padding(start = 16.dp),
                         checked = member.isLiked,
@@ -221,7 +181,113 @@ private fun CommunityMemberItem(
                 }
             }
         }
+
+        HorizontalDivider(
+            modifier = Modifier.padding(top = 16.dp),
+            thickness = 1.dp,
+            color = Color.DarkGray
+        )
     }
+}
+
+@Composable
+private fun RowScope.LanguagesInfo(member: CommunityMember) {
+    Text(
+        text = "Native-",
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.Bold
+    )
+    Text(
+        modifier = Modifier
+            .weight(1f)
+            .basicMarquee(
+                iterations = Int.MAX_VALUE,
+                velocity = 30.dp,
+                initialDelayMillis = 0
+            ),
+        text = member.natives.joinToString(),
+        maxLines = 1,
+        style = MaterialTheme.typography.labelSmall,
+        color = Color.DarkGray
+    )
+
+    Text(
+        modifier = Modifier
+            .padding(start = 16.dp),
+        text = "Learns-",
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.Bold
+    )
+    Text(
+        modifier = Modifier
+            .weight(1f)
+            .basicMarquee(
+                iterations = Int.MAX_VALUE,
+                velocity = 30.dp,
+                initialDelayMillis = 0
+            ),
+        text = member.learns.joinToString(),
+        maxLines = 1,
+        style = MaterialTheme.typography.labelSmall,
+        color = Color.DarkGray
+    )
+}
+
+@Composable
+private fun Description(member: CommunityMember) {
+    Text(
+        text = member.topic,
+        maxLines = 2,
+        style = MaterialTheme.typography.bodyMedium,
+        fontStyle = FontStyle.Italic,
+        color = Color.DarkGray,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+@Composable
+private fun MemberReferenceCount(member: CommunityMember) {
+    if (member.isNew) {
+        Text(
+            text = "NEW",
+            modifier = Modifier
+                .background(
+                    color = Color.Magenta,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = 2.dp,
+                    bottom = 2.dp
+                ),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.surface
+        )
+    } else {
+        Text(
+            modifier = Modifier.padding(
+                start = 12.dp,
+                end = 12.dp,
+                top = 2.dp,
+                bottom = 2.dp
+            ),
+            text = member.referenceCnt.toString(),
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+@Composable
+private fun MemberName(member: CommunityMember) {
+    Text(
+        text = member.firstName,
+        maxLines = 1,
+        fontWeight = FontWeight.Bold,
+        overflow = TextOverflow.Ellipsis
+    )
 }
 
 @Composable
@@ -229,14 +295,17 @@ private fun ProfileImage(member: CommunityMember) {
     Box(
         modifier = Modifier
             .size(120.dp)
+            .padding(start = 4.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.Red),
+            .border(width = 2.dp, color = Color.DarkGray, shape = RoundedCornerShape(12.dp)),
         contentAlignment = Alignment.Center
     ) {
         AsyncImage(
             model = member.pictureUrl,
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
             contentScale = ContentScale.Crop
         )
     }
