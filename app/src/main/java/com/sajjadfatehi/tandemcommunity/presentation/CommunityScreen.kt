@@ -87,9 +87,9 @@ fun CommunityScreen(
             else -> {
                 if (communityMembers.itemCount == 0) {
                     EmptyResult()
-                    return
+                } else {
+                    CommunityMembersList(modifier, communityMembers, onAction)
                 }
-                CommunityMembersList(modifier, communityMembers, onAction)
             }
         }
     }
@@ -137,7 +137,7 @@ private fun CommunityMemberItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onLikeClick)
+            .clickable(enabled = !member.isLiked, onClick = onLikeClick)
             .padding(
                 start = 8.dp,
                 top = 16.dp,
@@ -191,53 +191,31 @@ private fun CommunityMemberItem(
         HorizontalDivider(
             modifier = Modifier.padding(top = 16.dp),
             thickness = 1.dp,
-            color = Color.DarkGray
+            color = MaterialTheme.colorScheme.outlineVariant
         )
     }
 }
 
 @Composable
 private fun RowScope.LanguagesInfo(member: CommunityMember) {
-    Text(
-        text = stringResource(R.string.native_label),
-        style = MaterialTheme.typography.labelMedium,
-        fontWeight = FontWeight.Bold
-    )
-    Text(
-        modifier = Modifier
-            .weight(1f)
-            .basicMarquee(
-                iterations = Int.MAX_VALUE,
-                velocity = 30.dp,
-                initialDelayMillis = 0
-            ),
-        text = member.natives.joinToString(),
-        maxLines = 1,
-        style = MaterialTheme.typography.labelSmall,
-        color = Color.DarkGray
-    )
+    LanguageLabel(stringResource(R.string.native_label), member.natives.joinToString())
+    LanguageLabel(stringResource(R.string.learns_label), member.learns.joinToString())
+}
 
-    Text(
-        modifier = Modifier
-            .padding(start = 16.dp),
-        text = stringResource(R.string.learns_label),
-        style = MaterialTheme.typography.labelMedium,
-        fontWeight = FontWeight.Bold
-    )
+@Composable
+private fun RowScope.LanguageLabel(label: String, value: String) {
+    Text(text = label, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
     Text(
         modifier = Modifier
             .weight(1f)
-            .basicMarquee(
-                iterations = Int.MAX_VALUE,
-                velocity = 30.dp,
-                initialDelayMillis = 0
-            ),
-        text = member.learns.joinToString(),
+            .basicMarquee(iterations = Int.MAX_VALUE, velocity = 30.dp, initialDelayMillis = 0),
+        text = value,
         maxLines = 1,
         style = MaterialTheme.typography.labelSmall,
-        color = Color.DarkGray
+        color = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }
+
 
 @Composable
 private fun Description(member: CommunityMember) {
@@ -246,7 +224,7 @@ private fun Description(member: CommunityMember) {
         maxLines = 2,
         style = MaterialTheme.typography.bodyMedium,
         fontStyle = FontStyle.Italic,
-        color = Color.DarkGray,
+        color = MaterialTheme.colorScheme.outline,
         overflow = TextOverflow.Ellipsis,
     )
 }
@@ -258,7 +236,7 @@ private fun MemberReferenceCount(member: CommunityMember) {
             text = stringResource(R.string.badge_new),
             modifier = Modifier
                 .background(
-                    color = Color.Magenta,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(
@@ -300,10 +278,14 @@ private fun MemberName(member: CommunityMember) {
 private fun ProfileImage(member: CommunityMember) {
     Box(
         modifier = Modifier
-            .size(120.dp)
             .padding(start = 4.dp)
+            .size(120.dp)
             .clip(RoundedCornerShape(12.dp))
-            .border(width = 2.dp, color = Color.DarkGray, shape = RoundedCornerShape(12.dp)),
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.outline,
+                shape = RoundedCornerShape(12.dp)
+            ),
         contentAlignment = Alignment.Center
     ) {
         AsyncImage(
@@ -319,7 +301,7 @@ private fun ProfileImage(member: CommunityMember) {
 
 
 @Composable
-fun ErrorView(modifier: Modifier = Modifier, onRetryButtonClicked: () -> Unit) {
+private fun ErrorView(modifier: Modifier = Modifier, onRetryButtonClicked: () -> Unit) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -353,7 +335,7 @@ fun ErrorView(modifier: Modifier = Modifier, onRetryButtonClicked: () -> Unit) {
 }
 
 @Composable
-fun EmptyResult(modifier: Modifier = Modifier) {
+private fun EmptyResult(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -370,7 +352,7 @@ fun EmptyResult(modifier: Modifier = Modifier) {
         Text(
             modifier = Modifier.padding(24.dp),
             text = stringResource(R.string.empty_result),
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold
         )
@@ -379,7 +361,7 @@ fun EmptyResult(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LoadStateFooter(loadState: LoadState, onErrorStateRetryClicked: () -> Unit) {
+private fun LoadStateFooter(loadState: LoadState, onErrorStateRetryClicked: () -> Unit) {
     when (loadState) {
         is LoadState.Loading -> {
             Box(
