@@ -16,6 +16,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sajjadfatehi.tandemcommunity.presentation.CommunityScreen
@@ -32,7 +33,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
                     topBar = {
-                        CommunityTopBar(title = "Community")
+                        CommunityTopBar(title = stringResource(R.string.top_bar_title))
                     }) { innerPadding ->
 
                     CommunityScreen(modifier = Modifier.padding(innerPadding))

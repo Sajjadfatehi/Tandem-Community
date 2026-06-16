@@ -17,8 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CommunityViewModel @Inject constructor(
-    private val getCommunityUseCase: GetCommunityUseCase,
-    private val observeLikedMemberIdsUseCase: ObserveLikedMemberIdsUseCase,
+    getCommunityUseCase: GetCommunityUseCase,
+    observeLikedMemberIdsUseCase: ObserveLikedMemberIdsUseCase,
     private val toggleLikeUseCase: ToggleLikeUseCase
 ) : ViewModel() {
 

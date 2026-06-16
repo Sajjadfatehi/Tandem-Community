@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.sajjadfatehi.tandemcommunity.data.local.CommunityDatabase
 import com.sajjadfatehi.tandemcommunity.data.local.dao.CommunityMemberDao
+import com.sajjadfatehi.tandemcommunity.di.Constants.DB_NAME
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,9 +22,9 @@ class DatabaseModule {
         @ApplicationContext context: Context
     ): CommunityDatabase {
         return Room.databaseBuilder(
-            context,
-            CommunityDatabase::class.java,
-            "community.db"//TODO:move to constants
+            context = context,
+            klass = CommunityDatabase::class.java,
+            name = DB_NAME
         ).build()
     }
 

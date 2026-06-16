@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Tandem Community</string>
+    <string name="top_bar_title">Community</string>
+    <string name="native_label">Native-</string>
+    <string name="learns_label">Learns-</string>
+    <string name="badge_new">NEW</string>
+    <string name="server_error_text">There is something wrong, try again please</string>
+    <string name="try_again">Retry again</string>
+    <string name="empty_result">There is no community member yet</string>
 </resources>

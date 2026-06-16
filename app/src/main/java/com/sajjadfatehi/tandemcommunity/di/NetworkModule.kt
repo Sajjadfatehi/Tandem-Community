@@ -1,6 +1,7 @@
 package com.sajjadfatehi.tandemcommunity.di
 
 import com.sajjadfatehi.tandemcommunity.data.remote.api.CommunityApiService
+import com.sajjadfatehi.tandemcommunity.di.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,7 +47,7 @@ class NetworkModule {
         json: Json
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://tandem2019.web.app/api/")//TODO:move base url to Constants filed
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()

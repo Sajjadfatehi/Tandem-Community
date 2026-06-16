@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -129,14 +130,19 @@ private fun CommunityMembersList(
 
 @Composable
 private fun CommunityMemberItem(
+    modifier: Modifier = Modifier,
     member: CommunityMember,
     onLikeClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
             .clickable(onClick = onLikeClick)
+            .padding(
+                start = 8.dp,
+                top = 16.dp,
+                end = 8.dp,
+            )
     ) {
         Row(
             modifier = Modifier
@@ -193,7 +199,7 @@ private fun CommunityMemberItem(
 @Composable
 private fun RowScope.LanguagesInfo(member: CommunityMember) {
     Text(
-        text = "Native-",
+        text = stringResource(R.string.native_label),
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Bold
     )
@@ -214,7 +220,7 @@ private fun RowScope.LanguagesInfo(member: CommunityMember) {
     Text(
         modifier = Modifier
             .padding(start = 16.dp),
-        text = "Learns-",
+        text = stringResource(R.string.learns_label),
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Bold
     )
@@ -249,7 +255,7 @@ private fun Description(member: CommunityMember) {
 private fun MemberReferenceCount(member: CommunityMember) {
     if (member.isNew) {
         Text(
-            text = "NEW",
+            text = stringResource(R.string.badge_new),
             modifier = Modifier
                 .background(
                     color = Color.Magenta,
@@ -329,9 +335,10 @@ fun ErrorView(modifier: Modifier = Modifier, onRetryButtonClicked: () -> Unit) {
 
         Text(
             modifier = Modifier.padding(24.dp),
-            text = "There is something wrong try again please",
+            text = stringResource(R.string.server_error_text),
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.error,
         )
 
         Button(
@@ -339,7 +346,7 @@ fun ErrorView(modifier: Modifier = Modifier, onRetryButtonClicked: () -> Unit) {
             onClick = onRetryButtonClicked,
         ) {
             Text(
-                text = "Try again"
+                text = stringResource(R.string.try_again)
             )
         }
     }
@@ -362,7 +369,7 @@ fun EmptyResult(modifier: Modifier = Modifier) {
 
         Text(
             modifier = Modifier.padding(24.dp),
-            text = "There is no community member yet",
+            text = stringResource(R.string.empty_result),
             color = Color.Black,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold
@@ -392,14 +399,17 @@ fun LoadStateFooter(loadState: LoadState, onErrorStateRetryClicked: () -> Unit) 
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("There is something wrong try again please")
+                Text(
+                    text = stringResource(R.string.server_error_text),
+                    color = MaterialTheme.colorScheme.error
+                )
 
                 Spacer(Modifier.height(8.dp))
 
                 Button(
                     onClick = onErrorStateRetryClicked
                 ) {
-                    Text("Retry again")
+                    Text(stringResource(R.string.try_again))
                 }
             }
         }
