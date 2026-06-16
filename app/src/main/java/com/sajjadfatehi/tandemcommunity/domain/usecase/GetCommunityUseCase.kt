@@ -10,6 +10,6 @@ class GetCommunityUseCase @Inject constructor(
     private val repository: CommunityRepository
 ) {
     operator fun invoke(): Flow<PagingData<CommunityMember>> =
-        repository.getCommunityStream()
+        repository.getCommunityPagingData()
 }
 

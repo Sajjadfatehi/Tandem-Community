@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.sajjadfatehi.tandemcommunity.data.local.CommunityDatabase
 import com.sajjadfatehi.tandemcommunity.data.local.dao.CommunityMemberDao
-import com.sajjadfatehi.tandemcommunity.data.local.dao.CommunityRemoteKeyDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,10 +31,5 @@ class DatabaseModule {
     @Singleton
     fun provideCommunityMemberDao(database: CommunityDatabase): CommunityMemberDao =
         database.communityMemberDao()
-
-    @Singleton
-    @Provides
-    fun provideCommunityRemoteKeyDao(database: CommunityDatabase): CommunityRemoteKeyDao =
-        database.communityRemoteKeyDao()
 
 }

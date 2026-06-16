@@ -4,9 +4,9 @@ import com.sajjadfatehi.tandemcommunity.domain.repository.CommunityRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ObserveLikeUseCase @Inject constructor(
+class ObserveLikedMemberIdsUseCase @Inject constructor(
     private val repository: CommunityRepository
 ) {
-    operator fun invoke(memberId: Int): Flow<Boolean> =
-        repository.getLikeState(memberId)
+    operator fun invoke(): Flow<List<Int>> =
+        repository.observeLikedMemberIds()
 }

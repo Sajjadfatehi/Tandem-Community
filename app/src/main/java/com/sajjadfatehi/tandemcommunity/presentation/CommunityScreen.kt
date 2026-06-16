@@ -1,5 +1,6 @@
 package com.sajjadfatehi.tandemcommunity.presentation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,8 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,11 +30,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import com.sajjadfatehi.tandemcommunity.R
 import com.sajjadfatehi.tandemcommunity.domain.model.CommunityMember
@@ -53,10 +60,47 @@ fun CommunityScreen(
     communityMembers: LazyPagingItems<CommunityMember>,
     onAction: (CommunityAction) -> Unit
 ) {
+
+    val refreshState = communityMembers.loadState.refresh
+
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        when (refreshState) {
+
+            is LoadState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            is LoadState.Error -> {
+                ErrorView {
+                    communityMembers.retry()
+                }
+            }
+
+            else -> {
+                if (communityMembers.itemCount == 0) {
+                    EmptyResult()
+                    return
+                }
+                CommunityMembersList(modifier, communityMembers, onAction)
+            }
+        }
+    }
+
+}
+
+@Composable
+private fun CommunityMembersList(
+    modifier: Modifier,
+    communityMembers: LazyPagingItems<CommunityMember>,
+    onAction: (CommunityAction) -> Unit
+) {
     LazyColumn(modifier = modifier) {
         items(
             count = communityMembers.itemCount,
-            key = { index -> communityMembers[index]?.id ?: index }
+            key = communityMembers.itemKey { it.id }
         ) { index ->
             val member = communityMembers[index] ?: return@items
             CommunityMemberItem(
@@ -72,7 +116,9 @@ fun CommunityScreen(
             )
         }
         item {
-            //TODO: handle paging error state and retry button
+            LoadStateFooter(loadState = communityMembers.loadState.append) {
+                communityMembers.retry()
+            }
         }
     }
 }
@@ -193,5 +239,102 @@ private fun ProfileImage(member: CommunityMember) {
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
+    }
+}
+
+
+@Composable
+fun ErrorView(modifier: Modifier = Modifier, onRetryButtonClicked: () -> Unit) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Image(
+            modifier = Modifier
+                .size(320.dp)
+                .padding(32.dp),
+            painter = painterResource(R.drawable.illus_server_error),
+            contentDescription = null
+        )
+
+        Text(
+            modifier = Modifier.padding(24.dp),
+            text = "There is something wrong try again please",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Button(
+            modifier = Modifier.padding(24.dp),
+            onClick = onRetryButtonClicked,
+        ) {
+            Text(
+                text = "Try again"
+            )
+        }
+    }
+}
+
+@Composable
+fun EmptyResult(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Image(
+            modifier = Modifier
+                .size(320.dp)
+                .padding(32.dp),
+            painter = painterResource(R.drawable.illus_empty_result),
+            contentDescription = null
+        )
+
+        Text(
+            modifier = Modifier.padding(24.dp),
+            text = "There is no community member yet",
+            color = Color.Black,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+    }
+}
+
+@Composable
+fun LoadStateFooter(loadState: LoadState, onErrorStateRetryClicked: () -> Unit) {
+    when (loadState) {
+        is LoadState.Loading -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is LoadState.Error -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("There is something wrong try again please")
+
+                Spacer(Modifier.height(8.dp))
+
+                Button(
+                    onClick = onErrorStateRetryClicked
+                ) {
+                    Text("Retry again")
+                }
+            }
+        }
+
+        else -> Unit
     }
 }

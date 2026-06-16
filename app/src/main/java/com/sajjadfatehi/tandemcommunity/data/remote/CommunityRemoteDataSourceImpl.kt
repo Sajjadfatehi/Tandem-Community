@@ -1,5 +1,6 @@
 package com.sajjadfatehi.tandemcommunity.data.remote
 
+import com.sajjadfatehi.tandemcommunity.core.Result
 import com.sajjadfatehi.tandemcommunity.data.remote.api.CommunityApiService
 import com.sajjadfatehi.tandemcommunity.data.remote.dto.CommunityMemberDto
 import com.sajjadfatehi.tandemcommunity.domain.datasource.CommunityRemoteDataSource
@@ -9,11 +10,23 @@ class CommunityRemoteDataSourceImpl @Inject constructor(
     private val apiService: CommunityApiService
 ): CommunityRemoteDataSource {
 
-    override suspend fun getCommunityMembers(page: Int): List<CommunityMemberDto> {
-        val response = apiService.getCommunity(page)
-        if (!response.isSuccessful) {
-            throw IllegalStateException("Community request failed: ${response.code()}")
+    override suspend fun getCommunityMembers(page: Int): Result<List<CommunityMemberDto>> {
+        return try {
+            val response = apiService.getCommunity(page)
+            //TODO:make it cleaner with when branch
+            if (response.isSuccessful) {
+                Result.Success(response.body()?.communityMemberDto.orEmpty())
+            } else if (response.code() == 404) {
+                Result.Success(emptyList())
+            } else {
+                Result.Error(IllegalStateException("Community request failed"))
+            }
+        } catch (e: Exception) {
+            if (e is java.io.IOException) {
+                Result.Error(e)
+            } else {
+                Result.Success(emptyList())
+            }
         }
-        return response.body()?.communityMemberDto.orEmpty()
     }
 }

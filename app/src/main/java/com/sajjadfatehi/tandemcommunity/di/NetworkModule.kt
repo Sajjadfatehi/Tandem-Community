@@ -46,7 +46,7 @@ class NetworkModule {
         json: Json
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://tandem2019.web.app/api")//TODO:move base url to Constants filed
+            .baseUrl("https://tandem2019.web.app/api/")//TODO:move base url to Constants filed
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
