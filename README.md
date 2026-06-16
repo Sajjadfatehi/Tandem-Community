@@ -4,7 +4,7 @@ A community member listing Android app built with modern Android development pra
 
 ## Architecture
 
-**Single module** with layered architecture following Clean Architecture principles. Given the small scale of the project, a single module was sufficient. For larger scales, the project would transition to a **multi-module** setup with separate modules for `:core`, `:data`, `:domain`, and `:feature:community`.
+**Single module** with MVI architecture following Clean Architecture principles. Given the small scale of the project, a single module was sufficient. For larger scales, the project would transition to a **multi-module** setup with separate modules for `:core`, `:data`, `:domain`, and `:feature:community`.
 
 ```
 com.sajjadfatehi.tandemcommunity
