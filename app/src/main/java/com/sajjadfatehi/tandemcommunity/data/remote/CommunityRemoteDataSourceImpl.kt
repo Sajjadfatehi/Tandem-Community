@@ -8,18 +8,16 @@ import javax.inject.Inject
 
 class CommunityRemoteDataSourceImpl @Inject constructor(
     private val apiService: CommunityApiService
-): CommunityRemoteDataSource {
+) : CommunityRemoteDataSource {
 
     override suspend fun getCommunityMembers(page: Int): Result<List<CommunityMemberDto>> {
         return try {
             val response = apiService.getCommunity(page)
-            //TODO:make it cleaner with when branch
-            if (response.isSuccessful) {
-                Result.Success(response.body()?.communityMemberDto.orEmpty())
-            } else if (response.code() == 404) {
-                Result.Success(emptyList())
-            } else {
-                Result.Error(IllegalStateException("Community request failed"))
+
+            when {
+                response.isSuccessful -> Result.Success(response.body()?.communityMemberDto.orEmpty())
+                response.code() == 404 -> Result.Success(emptyList())
+                else -> Result.Error(IllegalStateException("Community request failed"))
             }
         } catch (e: Exception) {
             if (e is java.io.IOException) {

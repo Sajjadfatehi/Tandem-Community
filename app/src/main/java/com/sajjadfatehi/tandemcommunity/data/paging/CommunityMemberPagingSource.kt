@@ -1,6 +1,5 @@
 package com.sajjadfatehi.tandemcommunity.data.paging
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.sajjadfatehi.tandemcommunity.core.Result
@@ -18,15 +17,7 @@ class CommunityMemberPagingSource(private val communityRemoteDataSource: Communi
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CommunityMember> {
 
         val position = params.key ?: COMMUNITY_PAGE_INDEX
-        val result = communityRemoteDataSource.getCommunityMembers(page = position)
-
-        if (result is Result.Success) {
-            Log.d(
-                "Paging",
-                "page=$position returned=${result.data.size}"
-            )
-        }
-        return when (result) {
+        return when (val result = communityRemoteDataSource.getCommunityMembers(page = position)) {
             is Result.Error -> LoadResult.Error(result.exception)
             is Result.Loading -> LoadResult.Page(
                 data = emptyList(),
